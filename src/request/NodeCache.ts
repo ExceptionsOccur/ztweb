@@ -1,6 +1,6 @@
 import api from "../api/api";
-import CommonRequest from "./request";
-import { NodeType, SystemInfo } from "../data/Types";
+import CommonRequest from "../utils/request";
+import { NodeType, SystemInfoType } from "../data/Types";
 import { covertTime } from "../utils/utils";
 import TypesDefault from "../data/TypesDefault";
 
@@ -30,7 +30,7 @@ const request = {
       });
     });
   },
-  getSystemInfo(): Promise<SystemInfo> {
+  getSystemInfo(): Promise<SystemInfoType> {
     return new Promise((resolve) => {
       CommonRequest({
         method: "POST",

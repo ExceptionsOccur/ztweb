@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/vue-query";
 import api from "../api/api";
-import CommonRequest from "./request";
+import CommonRequest from "../utils/request";
 import { NetworkType, QueryCacheKey } from "../data/Types";
 
 const NetworkCache = {

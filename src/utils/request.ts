@@ -1,6 +1,6 @@
 import axios from "axios";
-import { getToken, setToken } from "../utils/token";
-import router from "../utils/routes";
+import { getToken, setToken } from "./token";
+import router from "./routes";
 
 axios.defaults.baseURL = "http://10.101.5.53:8000";
 

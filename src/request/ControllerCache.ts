@@ -1,5 +1,5 @@
 import api from "../api/api";
-import CommonRequest from "./request";
+import CommonRequest from "../utils/request";
 import {
   ControllerSettings,
   ControllerType,
