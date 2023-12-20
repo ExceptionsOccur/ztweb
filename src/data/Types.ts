@@ -5,15 +5,6 @@ export enum CardType {
   system = "系统状态",
 }
 
-export enum QueryCacheKey {
-  ControllerNetworkList = "控制器网络列表",
-  ControllerNetworkDetailList = "控制器网络详情列表",
-  ControllerNetworkDetail = "控制器网络详情列表",
-  Node = "节点详情",
-  Members = "控制器网络成员",
-  NetworkDetailList = "客户端网络详情列表",
-}
-
 export const MemberState = {
   OK: "OK",
   REQUESTING_CONFIGURATION: "REQUESTING_CONFIGURATION",

@@ -1,19 +1,8 @@
-import { useQueryClient } from "@tanstack/vue-query";
 import api from "../api/api";
 import CommonRequest from "../utils/request";
-import { NetworkType, QueryCacheKey } from "../data/Types";
+import { NetworkType } from "../data/Types";
 
 const NetworkCache = {
-  // asyncSetCache: (immediately: Ref) =>
-  //   useQuery({
-  //     queryKey: [QueryCacheKey.NetworkDetailList],
-  //     queryFn: () => request.getAllNetworks(),
-  //     enabled: immediately,
-  //   }),
-  getCache: (): Array<NetworkType> | undefined => {
-    return useQueryClient().getQueryData([QueryCacheKey.NetworkDetailList]);
-  },
-
   getAllNetworks: (): Promise<Array<NetworkType>> => {
     return request.getAllNetworkType();
   },

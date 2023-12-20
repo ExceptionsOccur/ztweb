@@ -5,7 +5,10 @@ const Node = "/node";
 const Scheme = "/zerotier";
 const User = "/user";
 const System = "/sys";
+
+const ws = "ws://10.101.5.53:8000/zerotier/ws";
 const api = {
+  ws: ws,
   User: {
     valid: Scheme + User + "/valid",
   },

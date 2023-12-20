@@ -149,40 +149,6 @@
   resolved "https://registry.npmmirror.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@tanstack/match-sorter-utils@^8.8.4":
-  version "8.8.4"
-  resolved "https://registry.npmmirror.com/@tanstack/match-sorter-utils/-/match-sorter-utils-8.8.4.tgz#0b2864d8b7bac06a9f84cb903d405852cc40a457"
-  integrity sha512-rKH8LjZiszWEvmi01NR72QWZ8m4xmXre0OOwlRGnjU01Eqz/QnN+cqpty2PJ0efHblq09+KilvyR7lsbzmXVEw==
-  dependencies:
-    remove-accents "0.4.2"
-
-"@tanstack/query-core@5.7.2":
-  version "5.7.2"
-  resolved "https://registry.npmmirror.com/@tanstack/query-core/-/query-core-5.7.2.tgz#c4a994d6f2b0a6901741a805c32da94db964880d"
-  integrity sha512-vPYoNCOI8W+jFLnyEAYQL7/qURE7XzVE/TvkmNSko8LU55jFshee342p4GNFOTsYFgJty7Da5bw4m2P3vaKWMw==
-
-"@tanstack/query-devtools@5.7.4":
-  version "5.7.4"
-  resolved "https://registry.npmmirror.com/@tanstack/query-devtools/-/query-devtools-5.7.4.tgz#6564ce1a6e9932542ec06d3b7cbb11e9b6ff8524"
-  integrity sha512-wx+gwRZUZq7ISXKFJgaAYvVPt+DwTaLKlzaVLB9SLBFIzcL8Jz8jDQGR9ZQp7/O7SVj0TohS8aFuiiGzQUvWyg==
-
-"@tanstack/vue-query-devtools@^5.8.0":
-  version "5.8.0"
-  resolved "https://registry.npmmirror.com/@tanstack/vue-query-devtools/-/vue-query-devtools-5.8.0.tgz#31a4336253dc651e9233f8a56261f309f9f10918"
-  integrity sha512-j0AdYUNVWO4mrpDlNxirbqVFqACTlCUHdssRYZpoSCzZX+hL72w6zBVKzSPuwF1paSYMaVPfJmbHBn9bW4rs+w==
-  dependencies:
-    "@tanstack/query-devtools" "5.7.4"
-
-"@tanstack/vue-query@^5.7.2":
-  version "5.7.2"
-  resolved "https://registry.npmmirror.com/@tanstack/vue-query/-/vue-query-5.7.2.tgz#a3cbb644a711ab64ee7aee0308a88a631504bb70"
-  integrity sha512-XTKeVZvXg2s8hBjqJFLUGX7fdEV6AntgfnUK3SWjn4r4QgZF+Sycb2TMDdln2dNzrxH3s01QVlliQ16B3BapyA==
-  dependencies:
-    "@tanstack/match-sorter-utils" "^8.8.4"
-    "@tanstack/query-core" "5.7.2"
-    "@vue/devtools-api" "^6.5.0"
-    vue-demi "^0.14.6"
-
 "@types/katex@^0.16.2":
   version "0.16.5"
   resolved "https://registry.npmmirror.com/@types/katex/-/katex-0.16.5.tgz#76adc073ce58e860cb8c34b5673e1aea9a0172b0"
@@ -632,11 +598,6 @@ regenerator-runtime@^0.14.0:
   resolved "https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.14.0.tgz#5e19d68eb12d486f797e15a3c6a918f7cec5eb45"
   integrity sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==
 
-remove-accents@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.npmmirror.com/remove-accents/-/remove-accents-0.4.2.tgz#0a43d3aaae1e80db919e07ae254b285d9e1c7bb5"
-  integrity sha512-7pXIJqJOq5tFgG1A2Zxti3Ht8jJF337m4sowbuHsW30ZnkQFnDzy9qBNhgzX8ZLW4+UBcXiiR7SwR6pokHsxiA==
-
 rollup@^3.27.1:
   version "3.29.4"
   resolved "https://registry.npmmirror.com/rollup/-/rollup-3.29.4.tgz#4d70c0f9834146df8705bfb69a9a19c9e1109981"
@@ -701,7 +662,7 @@ vooks@^0.2.12, vooks@^0.2.4:
   dependencies:
     evtd "^0.2.2"
 
-vue-demi@>=0.14.5, vue-demi@>=0.14.6, vue-demi@^0.14.6:
+vue-demi@>=0.14.5, vue-demi@>=0.14.6:
   version "0.14.6"
   resolved "https://registry.npmmirror.com/vue-demi/-/vue-demi-0.14.6.tgz#dc706582851dc1cdc17a0054f4fec2eb6df74c92"
   integrity sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==
