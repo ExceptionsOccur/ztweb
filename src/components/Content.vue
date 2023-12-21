@@ -14,6 +14,7 @@ import NodeCache from '../request/NodeCache';
 // import TypesConvert from '../data/TypesConvert';
 import TypeDefault from '../data/TypesDefault'
 import TypesDefault from '../data/TypesDefault';
+import emiter from '../utils/bus';
 
 
 const active = ref(false)
@@ -36,6 +37,9 @@ onMounted(() => {
     system_data.value.load = "1min: " + res.load.load1 + ", 5min: " + res.load.load5 + ", 15min: " + res.load.load15
     system_data.value.uptime = (res.host.uptime / 60 / 60 / 24).toFixed(1).toString() + " 天"
   })
+  emiter.on("member", (res: any) => {
+    console.log(res);
+  })
 })
 
 
@@ -55,13 +59,13 @@ const activate = (place: DrawerPlacement, type: CardType) => {
 <template>
   <n-space vertical>
     <!-- <n-space justify="center">
-      <MiniCard :cardData="node_mini" :title="CardType.node" @click="activate('left', CardType.node)" />
-      <MiniCard :cardData="node_mini" :title="CardType.controller" @click="activate('right', CardType.controller)" />
-    </n-space>
-    <n-space justify="center">
-      <MiniCard :cardData="node_mini" :title="CardType.network" @click="activate('left', CardType.network)" />
-      <MiniCard :cardData="system_data" :title="CardType.system" @click="activate('right', CardType.system)" />
-    </n-space> -->
+            <MiniCard :cardData="node_mini" :title="CardType.node" @click="activate('left', CardType.node)" />
+            <MiniCard :cardData="node_mini" :title="CardType.controller" @click="activate('right', CardType.controller)" />
+          </n-space>
+          <n-space justify="center">
+            <MiniCard :cardData="node_mini" :title="CardType.network" @click="activate('left', CardType.network)" />
+            <MiniCard :cardData="system_data" :title="CardType.system" @click="activate('right', CardType.system)" />
+          </n-space> -->
     <n-space justify="center">
       <MiniCard :title="CardType.node" @click="activate('left', CardType.node)" />
       <MiniCard :title="CardType.controller" @click="activate('right', CardType.controller)" />
@@ -75,7 +79,7 @@ const activate = (place: DrawerPlacement, type: CardType) => {
     <n-drawer-content>
       <node-card :nodeType="node_type" v-if="selected_card == CardType.node" />
       <controller-card v-if="selected_card == CardType.controller" />
-      <network-card v-if="selected_card == CardType.network" />
+      <network-card :nodeType="node_type" v-if="selected_card == CardType.network" />
       <system-card :systemInfo="system_data" v-if="selected_card == CardType.system" />
     </n-drawer-content>
   </n-drawer>

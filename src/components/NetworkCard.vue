@@ -2,7 +2,7 @@
     <div style="height: 100%;">
         <n-card style="height: 48%;">
             <n-scrollbar style="max-height: 420px;">
-                <n-card size="small" hoverable v-for="(item, index) in names_and_ips" :key="item.name"
+                <n-card size="small" hoverable v-for="(item, index) in names_and_ips" :key="item.id"
                     style="margin-bottom: 10px;">
                     <n-space :align="'center'">
                         <n-space @click="select_network(index)">
@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 
 import { NCard, NScrollbar, NButton, NSpace, NInput, NTag, NDivider } from "naive-ui";
@@ -112,8 +112,11 @@ interface NetworkState {
     ips: Array<string>,
     state: string,
     accessable: boolean
+    id: string
 }
 
+const props = defineProps(["nodeType"])
+const node_type = computed(() => props.nodeType)
 
 const network_detail_list = ref<Array<NetworkType>>([])
 
@@ -126,20 +129,26 @@ const nwid = ref("")
 
 
 onMounted(() => {
+    init()
+})
+
+const init = () => {
+    networks_class_array.value = []
+    names_and_ips.value = []
     NetworkCache.getAllNetworks().then(res => {
         network_detail_list.value = res
         for (let index = 0; index < network_detail_list.value.length; index++) {
             networks_class_array.value.push(TypesDefault.NetworkType())
         }
         for (let index = 0; index < network_detail_list.value.length; index++) {
-            names_and_ips.value.push({ name: network_detail_list.value[index].name, ips: network_detail_list.value[index].assignedAddresses, state: network_detail_list.value[index].status, accessable: !(network_detail_list.value[index].status == MemberState.ACCESS_DENIED) })
+            names_and_ips.value.push({ name: network_detail_list.value[index].name, ips: network_detail_list.value[index].assignedAddresses, state: network_detail_list.value[index].status, accessable: network_detail_list.value[index].status == MemberState.OK, id: network_detail_list.value[index].id })
         }
         if (network_detail_list.value.length > 0) {
             status_keys.value = Object.keys(network_detail_list.value[0])
             selected_network.value = network_detail_list.value[0];
         }
     })
-})
+}
 
 whenever(nwid, () => {
     if (nwid.value.length == 16)
@@ -151,9 +160,10 @@ const select_network = (index: number) => {
     selected_network.value = network_detail_list.value[index];
 }
 const leave_network = (index: number) => {
-    NetworkCache.leaveNetwork(network_detail_list.value[index]).then(() => {
+    NetworkCache.leaveNetwork(network_detail_list.value[index], node_type.value).then(() => {
         names_and_ips.value = names_and_ips.value.slice(0, index).concat(names_and_ips.value.slice(index + 1))
         networks_class_array.value = networks_class_array.value.slice(0, index).concat(networks_class_array.value.slice(index + 1))
+        init()
     })
 }
 const input_rule = (value: string) => {
@@ -166,7 +176,9 @@ const input_rule = (value: string) => {
 }
 
 const join_network = () => {
-    NetworkCache.joinNetwork(nwid.value)
+    NetworkCache.joinNetwork(nwid.value).then(() => {
+        init()
+    })
 }
 
 

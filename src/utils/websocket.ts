@@ -1,3 +1,5 @@
+import emiter from "./bus";
+
 export default class WebSocketConnection {
   private messages: string[] = []; // 存储接收到的消息
   private socket: WebSocket;
@@ -7,13 +9,14 @@ export default class WebSocketConnection {
   private reconnectInterval: number;
   private reconnectTimer: number | undefined;
   private url: string;
+  private isDead: boolean = false;
 
   constructor(url: string) {
     this.url = url;
     this.socket = new WebSocket(url);
-    this.pingInterval = 15000; // 15秒
+    this.pingInterval = 30000; // 30秒
     this.pingMessage = "ping";
-    this.reconnectInterval = 15000; // 15秒
+    this.reconnectInterval = 30000; // 30秒
     this.initWebsocket();
   }
   initWebsocket() {
@@ -25,16 +28,22 @@ export default class WebSocketConnection {
         // 发送心跳消息给服务器
         if (this.socket.readyState === WebSocket.OPEN) {
           this.socket.send(this.pingMessage);
-          console.log("sended message:", this.pingMessage);
+          if (this.isDead) {
+            this.clearReconnectTimer();
+          }
+          this.isDead = true;
         }
       }, this.pingInterval);
     });
 
     this.socket.addEventListener("message", (event) => {
       const message = event.data;
-      console.log("Received message:", message);
-
-      // 在这里处理收到的消息
+      if (message == "pong") this.isDead = false;
+      else {
+        let message_json = JSON.parse(message);
+        if (message_json["eventcode"] == 2001)
+          emiter.emit("member", message_json);
+      }
     });
 
     this.socket.addEventListener("close", () => {
@@ -45,8 +54,9 @@ export default class WebSocketConnection {
       this.startReconnectTimer();
     });
 
+    //@ts-ignore
     this.socket.addEventListener("error", (error) => {
-      console.log("WebSocket连接发生错误:", error);
+      console.log("WebSocket连接发生错误");
       // 清除心跳检测的定时器
       clearInterval(this.pingTimer);
       this.startReconnectTimer();
@@ -58,6 +68,7 @@ export default class WebSocketConnection {
     if (!this.reconnectTimer) {
       this.reconnectTimer = setInterval(() => {
         console.log("尝试重新连接 WebSocket...");
+        this.socket.close();
         this.socket = new WebSocket(this.url);
         this.initWebsocket();
       }, this.reconnectInterval);

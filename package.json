@@ -12,6 +12,7 @@
     "@vicons/tabler": "^0.12.0",
     "@vueuse/core": "^10.6.1",
     "axios": "^1.6.0",
+    "mitt": "^3.0.1",
     "naive-ui": "^2.35.0",
     "pinia": "^2.1.7",
     "typescript-cookie": "^1.0.6",

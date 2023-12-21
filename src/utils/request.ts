@@ -33,7 +33,10 @@ service.interceptors.response.use(
       if (res.data.token && res.data.token != "") {
         setToken(res.data.token);
       }
-      return res.data;
+      if (res.data.code === 2003 || res.data.code === 2004) {
+        router.push("/valid");
+      }
+      return res.data.data;
     }
   },
   (error: any) => {

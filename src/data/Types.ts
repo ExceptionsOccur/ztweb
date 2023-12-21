@@ -148,6 +148,7 @@ export interface MiniNodeType {
   nversion: string;
   [key: string]: boolean | number | string;
 }
+
 export interface MiniNetworkType {
   ntotal: number;
   nrecent: string;
