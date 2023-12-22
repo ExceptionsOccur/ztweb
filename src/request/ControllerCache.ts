@@ -53,6 +53,10 @@ const ControllerCache = {
     let settings = TypesConvert.toControllerSettings(ct);
     return request.updateController(settings);
   },
+  updateControllerNameSetting: (ct: ControllerType) => {
+    let settings = TypesConvert.toControllerSettings(ct);
+    return request.updateController(settings);
+  },
 };
 
 //-------------------------------------------------------------------
@@ -156,7 +160,7 @@ const request = {
         method: "POST",
         data: JSON.stringify(cs),
       }).then((res: any) => {
-        resolve(res);
+        resolve(JSON.parse(res));
       });
     });
   },

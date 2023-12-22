@@ -42,8 +42,9 @@
                 <n-space vertical>
                     <n-space justify="center">
                         <n-card size="small" style="width: 250px;">
-                            <n-input v-model:value="selected_network.name" type="text" maxlength="15" size="small"
-                                show-count />
+                            <n-input v-model:value="selected_network.name" ref="network_name_instance" type="text"
+                                maxlength="15" size="small" show-count @focus="handleNetworkNameFocus"
+                                @blur="handleNetworkNameBlur" />
                             <template #header>
                                 <n-space>
                                     <div style="font-size: 14px;">网络名称</div>
@@ -295,7 +296,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { NCard, NSpace, NScrollbar, NIcon, NInput, NButton, NList, NListItem, NThing, NModal, NBadge, NDrawer, NCheckbox, NDivider, NSwitch, NButtonGroup, NTooltip } from "naive-ui";
+import { NCard, NSpace, NScrollbar, NIcon, NInput, NButton, NList, NListItem, NThing, NModal, NBadge, NDrawer, NCheckbox, NDivider, NSwitch, NButtonGroup, NTooltip, InputInst } from "naive-ui";
 import { Trash, Help } from "@vicons/tabler"
 import ControllerCache from "../request/ControllerCache";
 import { ControllerType, MemberSettings, MemberCount } from "../data/Types";
@@ -337,7 +338,7 @@ enum UpdateState {
     done
 }
 
-//-------------------处理缓存数据-----------------------------
+//-------------------控制器列表初始化-----------------------------
 
 const network_detail_list = ref<ControllerType[]>([])
 
@@ -357,6 +358,27 @@ onMounted(() => {
     })
 })
 
+
+//-------------------控制器名称更改-----------------------------
+const network_name_instance = ref<InputInst | null>(null)
+
+const network_name_watch = ref("")
+const handleNetworkNameBlur = () => {
+    if (selected_network.value.name != "" && selected_network.value.name != network_name_watch.value) {
+        network_name_update_state.value = UpdateState.updating
+        ControllerCache.updateControllerNameSetting(selected_network.value).then((res) => {
+            if (res.name == selected_network.value.name) {
+                network_name_update_state.value = UpdateState.done
+                setTimeout(() => {
+                    network_name_update_state.value = UpdateState.none
+                }, 3000);
+            }
+        })
+    }
+}
+const handleNetworkNameFocus = () => {
+    network_name_watch.value = selected_network.value.name
+}
 
 
 //-------------------点击选择控制器-----------------------------
