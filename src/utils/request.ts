@@ -30,34 +30,23 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (res: any) => {
     if (res.status === 200) {
-      if (res.data.token && res.data.token != "") {
-        setToken(res.data.token);
+      if (res.data.code == 4000) {
+        setToken(res.data.data);
       }
-      if (res.data.code === 2003 || res.data.code === 2004) {
+      if (
+        res.data.code === 4001 ||
+        res.data.code === 4002 ||
+        res.data.code === 4003
+      ) {
         router.push("/valid");
       }
-      return res.data.data;
+      return res.data;
     }
   },
   (error: any) => {
-    let msg;
-    let code;
     let response = error.response;
-    if (response) {
-      let data = response.data || {};
-      let data_msg = data.msg;
-      code = data.code || -1;
-      msg = data_msg || "未知错误";
-    }
-    if (msg) {
-      if (response.status === 401) router.push("/valid");
-      return {
-        error: true,
-        msg: msg,
-        code: code,
-      };
-    }
-    return Promise.reject(error);
+    return response.data;
+    // return Promise.reject(error);
   }
 );
 

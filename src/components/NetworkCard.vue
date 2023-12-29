@@ -101,7 +101,7 @@ import { ref, onMounted, computed } from "vue";
 
 
 import { NCard, NScrollbar, NButton, NSpace, NInput, NTag, NDivider } from "naive-ui";
-import NetworkCache from "../request/NetworkCache";
+import Network from "../request/Network";
 import { MemberState, NetworkType } from "../data/Types";
 import TypesDefault from "../data/TypesDefault";
 import { whenever } from "@vueuse/core";
@@ -135,7 +135,7 @@ onMounted(() => {
 const init = () => {
     networks_class_array.value = []
     names_and_ips.value = []
-    NetworkCache.getAllNetworks().then(res => {
+    Network.getAllNetworks().then(res => {
         network_detail_list.value = res
         for (let index = 0; index < network_detail_list.value.length; index++) {
             networks_class_array.value.push(TypesDefault.NetworkType())
@@ -160,7 +160,7 @@ const select_network = (index: number) => {
     selected_network.value = network_detail_list.value[index];
 }
 const leave_network = (index: number) => {
-    NetworkCache.leaveNetwork(network_detail_list.value[index], node_type.value).then(() => {
+    Network.leaveNetwork(network_detail_list.value[index], node_type.value).then(() => {
         names_and_ips.value = names_and_ips.value.slice(0, index).concat(names_and_ips.value.slice(index + 1))
         networks_class_array.value = networks_class_array.value.slice(0, index).concat(networks_class_array.value.slice(index + 1))
         init()
@@ -176,7 +176,7 @@ const input_rule = (value: string) => {
 }
 
 const join_network = () => {
-    NetworkCache.joinNetwork(nwid.value).then(() => {
+    Network.joinNetwork(nwid.value).then(() => {
         init()
     })
 }

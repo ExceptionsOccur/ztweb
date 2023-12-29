@@ -57,6 +57,10 @@ const ControllerCache = {
     let settings = TypesConvert.toControllerSettings(ct);
     return request.updateController(settings);
   },
+  updateControllerPrivateSetting: (ct: ControllerType) => {
+    let settings = TypesConvert.toControllerSettings(ct);
+    return request.updateController(settings);
+  },
 };
 
 //-------------------------------------------------------------------
@@ -68,7 +72,7 @@ const request = {
         url: api.Controller.getAllControllerType,
       }).then((res: any) => {
         let tmp: Array<ControllerType> = [];
-        res.map((item: any) => {
+        res.data.map((item: any) => {
           tmp.push(JSON.parse(item));
         });
         resolve(tmp);
@@ -83,12 +87,12 @@ const request = {
         url: api.Controller.getAllMembersTypeByNwid,
         data: JSON.stringify({ nwid: nwid }),
       }).then((res: any) => {
-        if (res == null) {
+        if (res.code != 2000) {
           resolve([]);
           return;
         }
         let tmp: Array<MemberType> = [];
-        res.map((item: any) => {
+        res.data.map((item: any) => {
           tmp.push(JSON.parse(item));
         });
         resolve(tmp);
@@ -103,7 +107,7 @@ const request = {
         url: api.Controller.createController,
         data: JSON.stringify({ name: name }),
       }).then((res: any) => {
-        resolve(JSON.parse(res));
+        resolve(JSON.parse(res.data));
       });
     });
   },
@@ -114,7 +118,7 @@ const request = {
         url: api.Controller.deleteController,
         data: JSON.stringify({ nwid: nwid }),
       }).then((res: any) => {
-        resolve(JSON.parse(res));
+        resolve(JSON.parse(res.data));
       });
     });
   },
@@ -125,7 +129,7 @@ const request = {
         url: api.Controller.countMembers,
         data: JSON.stringify({}),
       }).then((res: any) => {
-        resolve(res);
+        resolve(res.data);
       });
     });
   },
@@ -137,7 +141,7 @@ const request = {
         method: "POST",
         data: JSON.stringify(ms),
       }).then((res: any) => {
-        resolve(res);
+        resolve(res.data);
       });
     });
   },
@@ -149,7 +153,7 @@ const request = {
         method: "POST",
         data: JSON.stringify(ms),
       }).then((res: any) => {
-        resolve(res);
+        resolve(res.data);
       });
     });
   },
@@ -160,7 +164,7 @@ const request = {
         method: "POST",
         data: JSON.stringify(cs),
       }).then((res: any) => {
-        resolve(JSON.parse(res));
+        resolve(JSON.parse(res.data));
       });
     });
   },

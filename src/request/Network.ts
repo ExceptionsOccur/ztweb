@@ -23,7 +23,7 @@ const request = {
         url: api.Network.getAllNetworkType,
         data: JSON.stringify({}),
       }).then((res: any) => {
-        resolve(JSON.parse(res));
+        resolve(JSON.parse(res.data));
       });
     });
   },
@@ -35,7 +35,7 @@ const request = {
         url: api.Network.leaveNetwork,
         data: JSON.stringify({ nwid: nt.nwid, id: node.address }),
       }).then((res: any) => {
-        resolve(res);
+        resolve(res.data);
       });
     });
   },
@@ -47,7 +47,7 @@ const request = {
         url: api.Network.joinToNetwork,
         data: JSON.stringify({ nwid: nwid }),
       }).then((res: any) => {
-        resolve(res);
+        resolve(res.data);
       });
     });
   },

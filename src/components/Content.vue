@@ -10,8 +10,7 @@ import NodeCard from './NodeCard.vue';
 import SystemCard from './SystemCard.vue';
 import { ref, onMounted } from 'vue'
 import { CardType, NodeType, SystemInfoMini } from "../data/Types"
-import NodeCache from '../request/NodeCache';
-// import TypesConvert from '../data/TypesConvert';
+import NodeCache from '../request/Node';
 import TypeDefault from '../data/TypesDefault'
 import TypesDefault from '../data/TypesDefault';
 import emiter from '../utils/bus';
@@ -59,13 +58,13 @@ const activate = (place: DrawerPlacement, type: CardType) => {
 <template>
   <n-space vertical>
     <!-- <n-space justify="center">
-            <MiniCard :cardData="node_mini" :title="CardType.node" @click="activate('left', CardType.node)" />
-            <MiniCard :cardData="node_mini" :title="CardType.controller" @click="activate('right', CardType.controller)" />
-          </n-space>
-          <n-space justify="center">
-            <MiniCard :cardData="node_mini" :title="CardType.network" @click="activate('left', CardType.network)" />
-            <MiniCard :cardData="system_data" :title="CardType.system" @click="activate('right', CardType.system)" />
-          </n-space> -->
+                        <MiniCard :cardData="node_mini" :title="CardType.node" @click="activate('left', CardType.node)" />
+                        <MiniCard :cardData="node_mini" :title="CardType.controller" @click="activate('right', CardType.controller)" />
+                      </n-space>
+                      <n-space justify="center">
+                        <MiniCard :cardData="node_mini" :title="CardType.network" @click="activate('left', CardType.network)" />
+                        <MiniCard :cardData="system_data" :title="CardType.system" @click="activate('right', CardType.system)" />
+                      </n-space> -->
     <n-space justify="center">
       <MiniCard :title="CardType.node" @click="activate('left', CardType.node)" />
       <MiniCard :title="CardType.controller" @click="activate('right', CardType.controller)" />

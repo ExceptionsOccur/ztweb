@@ -15,6 +15,11 @@ export interface MemberCount {
   [key: string]: number;
 }
 
+export interface ResponseData {
+  code: number;
+  data: any;
+}
+
 export interface SystemInfoType {
   host: {
     os: string;

@@ -2,7 +2,6 @@ import api from "../api/api";
 import CommonRequest from "../utils/request";
 
 import router from "../utils/routes";
-import { getToken } from "../utils/token";
 
 const ValidCache = {
   validPasscode: (passscode: string) => {
@@ -18,7 +17,7 @@ const request = {
         method: "POST",
         data: JSON.stringify({ passcode: passcode }),
       }).then((res: any) => {
-        if (getToken()) router.push("/content");
+        if (res.code == 4000) router.push("/content");
         resolve(res);
       });
     });

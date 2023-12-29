@@ -42,9 +42,8 @@
                 <n-space vertical>
                     <n-space justify="center">
                         <n-card size="small" style="width: 250px;">
-                            <n-input v-model:value="selected_network.name" ref="network_name_instance" type="text"
-                                maxlength="15" size="small" show-count @focus="handleNetworkNameFocus"
-                                @blur="handleNetworkNameBlur" />
+                            <n-input v-model:value="selected_network.name" type="text" maxlength="15" size="small"
+                                show-count @focus="handleNetworkNameFocus" @blur="handleNetworkNameBlur" />
                             <template #header>
                                 <n-space>
                                     <div style="font-size: 14px;">网络名称</div>
@@ -295,10 +294,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { NCard, NSpace, NScrollbar, NIcon, NInput, NButton, NList, NListItem, NThing, NModal, NBadge, NDrawer, NCheckbox, NDivider, NSwitch, NButtonGroup, NTooltip, InputInst } from "naive-ui";
+import { ref, onMounted, watch } from "vue";
+import { NCard, NSpace, NScrollbar, NIcon, NInput, NButton, NList, NListItem, NThing, NModal, NBadge, NDrawer, NCheckbox, NDivider, NSwitch, NButtonGroup, NTooltip } from "naive-ui";
 import { Trash, Help } from "@vicons/tabler"
-import ControllerCache from "../request/ControllerCache";
+import Controller from "../request/Controller";
 import { ControllerType, MemberSettings, MemberCount } from "../data/Types";
 import TypeDefault from "../data/TypesDefault";
 import TypesCovert from "../data/TypesConvert"
@@ -306,31 +305,22 @@ import { FunctionArgs, set, useThrottleFn, whenever } from "@vueuse/core";
 import { delArrayIndex, executeMoreTimes, get6PlaneIPStr, getRFCIPStr, ptrWhenDel, randomIPRange } from "../utils/utils";
 
 
+// ------------start: 生命周期钩子------------
+onMounted(() => {
+    Controller.getAllControllerType().then((res: Array<ControllerType>) => {
+        network_detail_list.value = res
+        selected_network.value = network_detail_list.value[0];
+    })
+    Controller.countMembers().then((res) => {
+        badge_number.value = res
+    })
+})
+// ------------end: 生命周期钩子------------
+
+
+
+// ------------start: 组件全局变量------------
 const selected_network = ref(TypeDefault.ControllerType())
-
-
-const ip_ranges = ref()
-const quick_assign_ip = ref(true)
-
-whenever(() => selected_network.value.v4AssignMode.zt, () => {
-    if (quick_assign_ip.value)
-        ip_ranges.value = executeMoreTimes(randomIPRange, 6)
-})
-
-
-const route_target = ref("")
-const route_via = ref("")
-
-const plane6_ip = ref<string>()
-whenever(() => selected_network.value.v6AssignMode["6plane"], () => {
-    plane6_ip.value = get6PlaneIPStr(selected_network.value.nwid)
-})
-
-const rfc_ip = ref<string>()
-whenever(() => selected_network.value.v6AssignMode.rfc4193, () => {
-    rfc_ip.value = getRFCIPStr(selected_network.value.nwid)
-})
-
 
 enum UpdateState {
     none,
@@ -338,52 +328,25 @@ enum UpdateState {
     done
 }
 
-//-------------------控制器列表初始化-----------------------------
+// 动画更新控制变量
+const network_name_update_state = ref(UpdateState.none)
+const private_update_state = ref(UpdateState.none)
+const ipv4_update_state = ref(UpdateState.none)
+const ipv6_update_state = ref(UpdateState.none)
+const routes_update_state = ref(UpdateState.none)
 
+// ------------end: 组件全局变量------------
+
+
+
+// ------------start: 控制器列表展示------------
 const network_detail_list = ref<ControllerType[]>([])
-
-// 数据获取后页面加载
-
-// badge的显示
+// badge
 const badge_number = ref<MemberCount>({})
 
+const create_network_modal = ref(false)
+const input_network_name = ref("")
 
-onMounted(() => {
-    ControllerCache.getAllControllerType().then((res: Array<ControllerType>) => {
-        network_detail_list.value = res
-        selected_network.value = network_detail_list.value[0];
-    })
-    ControllerCache.countMembers().then((res) => {
-        badge_number.value = res
-    })
-})
-
-
-//-------------------控制器名称更改-----------------------------
-const network_name_instance = ref<InputInst | null>(null)
-
-const network_name_watch = ref("")
-const handleNetworkNameBlur = () => {
-    if (selected_network.value.name != "" && selected_network.value.name != network_name_watch.value) {
-        network_name_update_state.value = UpdateState.updating
-        ControllerCache.updateControllerNameSetting(selected_network.value).then((res) => {
-            if (res.name == selected_network.value.name) {
-                network_name_update_state.value = UpdateState.done
-                setTimeout(() => {
-                    network_name_update_state.value = UpdateState.none
-                }, 3000);
-            }
-        })
-    }
-}
-const handleNetworkNameFocus = () => {
-    network_name_watch.value = selected_network.value.name
-}
-
-
-//-------------------点击选择控制器-----------------------------
-
-// const selected_network_member = ref<Array<MemberType>>(new Array())
 const controller_selected_index = ref(0)
 whenever(controller_selected_index, () => {
     set(route_target, "")
@@ -397,25 +360,7 @@ const selectNetwork = (index: number) => {
     selected_network.value = network_detail_list.value[index];
 }
 
-//------------------点击显示成员详情------------------------------
-
-const member_settings_list = ref<MemberSettings[]>([])
-const member_drawer = ref(false)
-const clickMember = (network_id: string) => {
-    member_settings_list.value = []
-    member_drawer.value = true
-    ControllerCache.getAllMembersTypeByNwid(network_id).then(res => {
-        res.map(item => {
-            member_settings_list.value.push(TypesCovert.toMemberSettings(item))
-        })
-    })
-}
-
-//------------------控制器新增、删除------------------------------
-
-const create_network_modal = ref(false)
-const input_network_name = ref("")
-
+// 控制器新增和删除操作
 const closeCreateModal = () => {
     create_network_modal.value = false
 }
@@ -426,7 +371,7 @@ const openCreateModal = () => {
 }
 
 const clickDeleteBtn = (index: number, ct: ControllerType) => {
-    ControllerCache.deleteController(ct.nwid).then((res: ControllerType) => {
+    Controller.deleteController(ct.nwid).then((res: ControllerType) => {
         if (res.nwid == ct.nwid) {
             network_detail_list.value = delArrayIndex(network_detail_list.value, index)
             controller_selected_index.value = ptrWhenDel(network_detail_list.value, index)
@@ -436,85 +381,90 @@ const clickDeleteBtn = (index: number, ct: ControllerType) => {
 }
 
 const confirmToCreateNetwork = () => {
-    ControllerCache.createController(input_network_name.value).then((res: ControllerType) => {
+    Controller.createController(input_network_name.value).then((res: ControllerType) => {
         if (res.name == input_network_name.value)
             create_network_modal.value = false
-        ControllerCache.getAllControllerType().then(res => {
+        Controller.getAllControllerType().then(res => {
             network_detail_list.value = res
         })
-        ControllerCache.countMembers().then(res => {
+        Controller.countMembers().then(res => {
             badge_number.value = res
         })
     })
 }
+// ------------end: 控制器列表展示------------
 
 
-
-
-const network_name_update_state = ref(UpdateState.none)
-const private_update_state = ref(UpdateState.none)
-const ipv4_update_state = ref(UpdateState.none)
-const ipv6_update_state = ref(UpdateState.none)
-const routes_update_state = ref(UpdateState.none)
-
-
-
-//------------------成员授权接入------------------------------
-const updateMemberAuthorized = (member: MemberSettings) => {
-    throttlenFn(() => {
-        ControllerCache.updateMember(member)
-    }, 1000)
+// ------------start: 控制器更新：名称和性质------------
+const network_name_watch = ref("")
+const handleNetworkNameFocus = () => {
+    network_name_watch.value = selected_network.value.name
 }
-
-//------------------删除成员------------------------------
-const deleteMember = (ms: MemberSettings) => {
-    throttlenFn(() => {
-        ControllerCache.deleteMember(ms)
-    }, 1000)
+const handleNetworkNameBlur = () => {
+    if (selected_network.value.name != "" && selected_network.value.name != network_name_watch.value) {
+        network_name_update_state.value = UpdateState.updating
+        Controller.updateControllerNameSetting(selected_network.value).then((res) => {
+            if (res.name == selected_network.value.name) {
+                network_name_update_state.value = UpdateState.done
+                setTimeout(() => {
+                    network_name_update_state.value = UpdateState.none
+                }, 3000);
+            }
+        })
+    }
 }
+//@ts-ignore
+const private_watch = watch(() => selected_network.value.private, (n: boolean, o: boolean) => {
+    if ((n || o) && !(n && o)) {
+        throttlenFn(() => {
+            private_update_state.value = UpdateState.updating
+            Controller.updateControllerPrivateSetting(selected_network.value).then((res) => {
+                if (res.private == selected_network.value.private) {
+                    private_update_state.value = UpdateState.done
+                    setTimeout(() => {
+                        private_update_state.value = UpdateState.none
+                    }, 3000);
+                }
+            })
+        }, 1000)
+    }
+})
+// ------------end: 控制器更新：名称和性质------------
 
-//------------------更新成员ip------------------------------
-const member_new_ip = ref("")
-const addIpToMember = (ms: MemberSettings) => {
-    throttlenFn(() => {
-        ms.ipAssignments.push(member_new_ip.value)
-        ControllerCache.updateMember(ms)
-    }, 1000)
-}
+// ------------start: 控制器更新：ipv4------------
 
-const deleteMemberIP = (ms: MemberSettings, index: number) => {
-    throttlenFn(() => {
-        if (ms.ipAssignments.length == 1) ms.ipAssignments = []
-        else if (ms.ipAssignments.length == index + 1) ms.ipAssignments.pop()
-        else ms.ipAssignments = ms.ipAssignments.slice(0, index).concat(ms.ipAssignments.slice(index + 1))
-        ControllerCache.updateMember(ms)
-    }, 1000)
-}
+const ip_ranges = ref()
+const quick_assign_ip = ref(true)
+// 更新时看情况需要同步更新路由
+const route_target = ref("")
+const route_via = ref("")
+const ip_range_start = ref("")
+const ip_range_end = ref("")
 
-//------------------删除控制器ip分配地址段---------------------
+whenever(() => selected_network.value.v4AssignMode.zt, () => {
+    if (quick_assign_ip.value)
+        ip_ranges.value = executeMoreTimes(randomIPRange, 6)
+})
+
+const plane6_ip = ref<string>()
+whenever(() => selected_network.value.v6AssignMode["6plane"], () => {
+    plane6_ip.value = get6PlaneIPStr(selected_network.value.nwid)
+})
+
+const rfc_ip = ref<string>()
+whenever(() => selected_network.value.v6AssignMode.rfc4193, () => {
+    rfc_ip.value = getRFCIPStr(selected_network.value.nwid)
+})
 const deleteIpPool = () => {
     selected_network.value.ipAssignmentPools = []
-    ControllerCache.updateControllerIPv4Setting(selected_network.value).then(() => { })
+    Controller.updateControllerIPv4Setting(selected_network.value).then(() => { })
 }
-
-//------------------删除控制器路由---------------------
-const deleteRoute = () => {
-    selected_network.value.routes = []
-    ControllerCache.updateControllerRouteSetting(selected_network.value).then(() => { })
-}
-
-//------------------更新控制器ipv4的配置-----------------------
-
 const selected_quick_ip_range = ref<string[]>([])
 const selected_quick_ip = (ip: string[]) => {
     selected_quick_ip_range.value = ip
 }
 
-
-const ip_range_start = ref("")
-const ip_range_end = ref("")
 const updateControllerIPv4 = () => {
-
     if (quick_assign_ip.value) {
         selected_network.value.ipAssignmentPools = []
         selected_network.value.ipAssignmentPools.push({
@@ -530,20 +480,12 @@ const updateControllerIPv4 = () => {
         })
 
     }
-    ControllerCache.updateControllerIPv4Setting(selected_network.value).then(() => { })
+    Controller.updateControllerIPv4Setting(selected_network.value).then(() => { })
 }
-//------------------更新控制器路由的配置-----------------------
-const updateControllerRoutes = () => {
-    selected_network.value.routes = []
-    selected_network.value.routes.push({
-        target: route_target.value,
-        via: route_via.value
-    })
+// ------------end: 控制器更新：ipv4------------
 
-    ControllerCache.updateControllerRouteSetting(selected_network.value).then(() => { })
-}
+// ------------start: 控制器更新：ipv6------------
 
-//------------------更新控制器ipv6的配置-----------------------
 // const ipv6_assign_start = ref("")
 // const ipv6_assign_end = ref("")
 const updateControllerIPv6 = () => {
@@ -552,14 +494,80 @@ const updateControllerIPv6 = () => {
     //     selected_network.value.ipAssignmentPools.push({
     //         ipRangeStart: ipv6_assign_start.value, ipRangeEnd: ipv6_assign_end.value
     //     })
-    ControllerCache.updateControllerIPv6Setting(selected_network.value).then(() => { })
+    Controller.updateControllerIPv6Setting(selected_network.value).then(() => { })
+}   // end: 控制器更新：ipv6
+
+// ------------start: 控制器更新：路由------------
+const deleteRoute = () => {
+    selected_network.value.routes = []
+    Controller.updateControllerRouteSetting(selected_network.value).then(() => { })
 }
 
+const updateControllerRoutes = () => {
+    selected_network.value.routes = []
+    selected_network.value.routes.push({
+        target: route_target.value,
+        via: route_via.value
+    })
+
+    Controller.updateControllerRouteSetting(selected_network.value).then(() => { })
+}
+// ------------end: 控制器更新：路由------------
+
+//------------start: 成员管理------------
+
+const member_settings_list = ref<MemberSettings[]>([])
+const member_drawer = ref(false)
+const clickMember = (network_id: string) => {
+    member_settings_list.value = []
+    member_drawer.value = true
+    Controller.getAllMembersTypeByNwid(network_id).then(res => {
+        res.map(item => {
+            member_settings_list.value.push(TypesCovert.toMemberSettings(item))
+        })
+    })
+}
+
+
+const updateMemberAuthorized = (member: MemberSettings) => {
+    throttlenFn(() => {
+        Controller.updateMember(member)
+    }, 1000)
+}
+
+//------删除成员-------
+const deleteMember = (ms: MemberSettings) => {
+    throttlenFn(() => {
+        Controller.deleteMember(ms)
+    }, 1000)
+}
+
+//------更新成员ip------
+const member_new_ip = ref("")
+const addIpToMember = (ms: MemberSettings) => {
+    throttlenFn(() => {
+        ms.ipAssignments.push(member_new_ip.value)
+        Controller.updateMember(ms)
+    }, 1000)
+}
+
+const deleteMemberIP = (ms: MemberSettings, index: number) => {
+    throttlenFn(() => {
+        if (ms.ipAssignments.length == 1) ms.ipAssignments = []
+        else if (ms.ipAssignments.length == index + 1) ms.ipAssignments.pop()
+        else ms.ipAssignments = ms.ipAssignments.slice(0, index).concat(ms.ipAssignments.slice(index + 1))
+        Controller.updateMember(ms)
+    }, 1000)
+}
+
+
+
+// ------------功能函数------------
 
 const throttlenFn = (fn: FunctionArgs<any[], void>, time: number) => {
     useThrottleFn(fn, time)()
 }
-
+// ------------end: 成员管理------------
 </script>
 
 <style scope>

@@ -15,7 +15,7 @@
 import { onKeyStroke } from '@vueuse/core';
 import { NSpace, NInput, InputInst } from 'naive-ui';
 import { computed, onMounted, ref, watch } from 'vue';
-import ValidCache from '../request/ValidCache';
+import ValidCache from '../request/Valid';
 
 const input_refs = ref<Array<InputInst>>([]);
 

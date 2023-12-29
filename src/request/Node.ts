@@ -20,11 +20,11 @@ const request = {
         method: "POST",
         url: api.Node.getNodeStatus,
       }).then((res: any) => {
-        if (res.error) {
+        if (res.code != 2000) {
           resolve(TypesDefault.NodeType());
           return;
         }
-        let res_json = JSON.parse(res);
+        let res_json = JSON.parse(res.data);
         res_json.clock = covertTime(res_json.clock);
         resolve(res_json);
       });
@@ -35,7 +35,8 @@ const request = {
       CommonRequest({
         method: "POST",
         url: api.System.getSystemInfo,
-      }).then((res: any) => {
+      }).then((res_data: any) => {
+        let res = res_data.data;
         let system_info = TypesDefault.SystemInfo();
         system_info.cpu.cores = res.cpu.length;
         system_info.cpu.name = res.cpu[0].modelName;
